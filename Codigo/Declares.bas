@@ -237,7 +237,7 @@ Public Const LimiteNewbie As Byte = 12
 
 Public Type tCabecera 'Cabecera de los con
 
-    desc As String * 255
+    Desc As String * 255
     crc As Long
     MagicWord As Long
 
@@ -605,7 +605,7 @@ Public Enum eSkill
     Talar = 9
     Comerciar = 10
     Defensa = 11
-    Pesca = 12
+    pesca = 12
     Mineria = 13
     Carpinteria = 14
     Herreria = 15
@@ -637,85 +637,51 @@ Public Enum eAtributos
 End Enum
 
 Public Const AdicionalHPGuerrero        As Byte = 2 'HP adicionales cuando sube de nivel
-
 Public Const AdicionalHPCazador         As Byte = 1 'HP adicionales cuando sube de nivel
-
 Public Const AumentoSTDef               As Byte = 15
-
 Public Const AumentoStBandido           As Byte = AumentoSTDef + 3
-
 Public Const AumentoSTLadron            As Byte = AumentoSTDef + 3
-
 Public Const AumentoSTMago              As Byte = AumentoSTDef - 1
-
 Public Const AumentoSTTrabajador        As Byte = AumentoSTDef + 25
 
 'Tamano del mapa
 Public Const XMaxMapSize                As Byte = 100
-
 Public Const XMinMapSize                As Byte = 1
-
 Public Const YMaxMapSize                As Byte = 100
-
 Public Const YMinMapSize                As Byte = 1
 
 'Tamano del tileset
 Public Const TileSizeX                  As Byte = 32
-
 Public Const TileSizeY                  As Byte = 32
 
 'Tamano en Tiles de la pantalla de visualizacion
-Public Const XWindow                    As Byte = 17
-
-Public Const YWindow                    As Byte = 13
+Public Const XWindow                    As Byte = 23
+Public Const YWindow                    As Byte = 17
 
 'Sonidos
 Public Const SND_SWING                  As Byte = 2
-
 Public Const SND_TALAR                  As Byte = 13
-
 Public Const SND_PESCAR                 As Byte = 14
-
 Public Const SND_MINERO                 As Byte = 15
-
 Public Const SND_WARP                   As Byte = 3
-
 Public Const SND_PUERTA                 As Byte = 5
-
 Public Const SND_NIVEL                  As Byte = 6
-
 Public Const SND_USERMUERTE             As Byte = 11
-
 Public Const SND_IMPACTO                As Byte = 10
-
 Public Const SND_IMPACTO2               As Byte = 12
-
 Public Const SND_LENADOR                As Byte = 13
-
 Public Const SND_FOGATA                 As Byte = 14
-
 Public Const SND_AVE                    As Byte = 21
-
 Public Const SND_AVE2                   As Byte = 22
-
 Public Const SND_AVE3                   As Byte = 34
-
 Public Const SND_GRILLO                 As Byte = 28
-
 Public Const SND_GRILLO2                As Byte = 29
-
 Public Const SND_SACARARMA              As Byte = 25
-
 Public Const SND_ESCUDO                 As Byte = 37
-
 Public Const SND_TRABAJO_HERRERO        As Byte = 41
-
 Public Const SND_TRABAJO_CARPINTERO     As Byte = 42
-
 Public Const SND_BEBER                  As Byte = 46
-
 Public Const SND_RESUCITAR_SACERDOTE    As Byte = 213
-
 Public Const SND_CURAR_SACERDOTE        As Byte = 214
 
 ''
