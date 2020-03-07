@@ -36,7 +36,7 @@ Option Explicit
 
 #If False Then
 
-    Dim X, Y, n, mapa, Email, Length As Variant
+    Dim x, Y, n, mapa, Email, Length As Variant
 
 #End If
 
@@ -878,7 +878,14 @@ Private Sub AddItemsToNewUser(ByVal Userindex As Integer, ByVal UserClase As eCl
 
         ' Total Items
         .Invent.NroItems = Slot
-     End With
+        
+        Dim i As Long
+        For i = 1 To MAXAMIGOS
+        .Amigos(i).Nombre = "------"
+        .Amigos(i).Ignorado = 0
+        .Amigos(i).index = 0
+        Next i
+        End With
 End Sub
 
 Private Sub AddItemsCustomToNewUser(ByVal Userindex As Integer)
@@ -1078,7 +1085,7 @@ End Sub
             
             ' Retos nVSn. Usuario cierra conexion.
             If .flags.SlotReto > 0 Then
-                Call Retos.UserdieFight(Userindex, 0, True)
+                Call Retos.UserDieFight(Userindex, 0, True)
             End If
 
             ' Desequipamos la montura justo antes de cerrar el socket
@@ -1343,18 +1350,18 @@ Function EstaPCarea(index As Integer, Index2 As Integer) As Boolean
     '
     '***************************************************
 
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, Y As Integer
 
     For Y = UserList(index).Pos.Y - MinYBorder + 1 To UserList(index).Pos.Y + MinYBorder - 1
-        For X = UserList(index).Pos.X - MinXBorder + 1 To UserList(index).Pos.X + MinXBorder - 1
+        For x = UserList(index).Pos.x - MinXBorder + 1 To UserList(index).Pos.x + MinXBorder - 1
 
-            If MapData(UserList(index).Pos.Map, X, Y).Userindex = Index2 Then
+            If MapData(UserList(index).Pos.Map, x, Y).Userindex = Index2 Then
                 EstaPCarea = True
                 Exit Function
 
             End If
         
-        Next X
+        Next x
     Next Y
 
     EstaPCarea = False
@@ -1368,13 +1375,13 @@ Function HayPCarea(Pos As WorldPos) As Boolean
     '
     '***************************************************
 
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, Y As Integer
 
     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-        For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+        For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
 
-            If X > 0 And Y > 0 And X < 101 And Y < 101 Then
-                If MapData(Pos.Map, X, Y).Userindex > 0 Then
+            If x > 0 And Y > 0 And x < 101 And Y < 101 Then
+                If MapData(Pos.Map, x, Y).Userindex > 0 Then
                     HayPCarea = True
                     Exit Function
 
@@ -1382,7 +1389,7 @@ Function HayPCarea(Pos As WorldPos) As Boolean
 
             End If
 
-        Next X
+        Next x
     Next Y
 
     HayPCarea = False
@@ -1396,18 +1403,18 @@ Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
     '
     '***************************************************
 
-    Dim X As Integer, Y As Integer
+    Dim x As Integer, Y As Integer
 
     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-        For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+        For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
 
-            If MapData(Pos.Map, X, Y).ObjInfo.ObjIndex = ObjIndex Then
+            If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
                 HayOBJarea = True
                 Exit Function
 
             End If
         
-        Next X
+        Next x
     Next Y
 
     HayOBJarea = False
@@ -1589,6 +1596,8 @@ Sub ConnectUser(ByVal Userindex As Integer, _
     
         Call UpdateUserInv(True, Userindex, 0)
         Call UpdateUserHechizos(True, Userindex, 0)
+        Call ActualizarSlotAmigo(Userindex, 0, True)
+        Call ObtenerIndexAmigos(Userindex, False)
     
         If .flags.Paralizado Then
             Call WriteParalizeOK(Userindex)
@@ -1644,7 +1653,7 @@ Sub ConnectUser(ByVal Userindex As Integer, _
     
         'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
         'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
-        If MapData(mapa, .Pos.X, .Pos.Y).Userindex <> 0 Or MapData(mapa, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
+        If MapData(mapa, .Pos.x, .Pos.Y).Userindex <> 0 Or MapData(mapa, .Pos.x, .Pos.Y).NpcIndex <> 0 Then
 
             Dim FoundPlace As Boolean
 
@@ -1655,10 +1664,10 @@ Sub ConnectUser(ByVal Userindex As Integer, _
             Dim tY         As Long
         
             FoundPlace = False
-            esAgua = HayAgua(mapa, .Pos.X, .Pos.Y)
+            esAgua = HayAgua(mapa, .Pos.x, .Pos.Y)
         
             For tY = .Pos.Y - 1 To .Pos.Y + 1
-                For tX = .Pos.X - 1 To .Pos.X + 1
+                For tX = .Pos.x - 1 To .Pos.x + 1
 
                     If esAgua Then
 
@@ -1686,35 +1695,35 @@ Sub ConnectUser(ByVal Userindex As Integer, _
             Next tY
         
             If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
-                .Pos.X = tX
+                .Pos.x = tX
                 .Pos.Y = tY
             Else
 
                 'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-                If MapData(mapa, .Pos.X, .Pos.Y).Userindex <> 0 Then
+                If MapData(mapa, .Pos.x, .Pos.Y).Userindex <> 0 Then
 
                     'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-                    If UserList(MapData(mapa, .Pos.X, .Pos.Y).Userindex).ComUsu.DestUsu > 0 Then
+                    If UserList(MapData(mapa, .Pos.x, .Pos.Y).Userindex).ComUsu.DestUsu > 0 Then
 
                         'Le avisamos al que estaba comerciando que se tuvo que ir.
-                        If UserList(UserList(MapData(mapa, .Pos.X, .Pos.Y).Userindex).ComUsu.DestUsu).flags.UserLogged Then
-                            Call FinComerciarUsu(UserList(MapData(mapa, .Pos.X, .Pos.Y).Userindex).ComUsu.DestUsu)
-                            Call WriteConsoleMsg(UserList(MapData(mapa, .Pos.X, .Pos.Y).Userindex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
-                            Call FlushBuffer(UserList(MapData(mapa, .Pos.X, .Pos.Y).Userindex).ComUsu.DestUsu)
+                        If UserList(UserList(MapData(mapa, .Pos.x, .Pos.Y).Userindex).ComUsu.DestUsu).flags.UserLogged Then
+                            Call FinComerciarUsu(UserList(MapData(mapa, .Pos.x, .Pos.Y).Userindex).ComUsu.DestUsu)
+                            Call WriteConsoleMsg(UserList(MapData(mapa, .Pos.x, .Pos.Y).Userindex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
+                            Call FlushBuffer(UserList(MapData(mapa, .Pos.x, .Pos.Y).Userindex).ComUsu.DestUsu)
 
                         End If
 
                         'Lo sacamos.
-                        If UserList(MapData(mapa, .Pos.X, .Pos.Y).Userindex).flags.UserLogged Then
-                            Call FinComerciarUsu(MapData(mapa, .Pos.X, .Pos.Y).Userindex)
-                            Call WriteErrorMsg(MapData(mapa, .Pos.X, .Pos.Y).Userindex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
-                            Call FlushBuffer(MapData(mapa, .Pos.X, .Pos.Y).Userindex)
+                        If UserList(MapData(mapa, .Pos.x, .Pos.Y).Userindex).flags.UserLogged Then
+                            Call FinComerciarUsu(MapData(mapa, .Pos.x, .Pos.Y).Userindex)
+                            Call WriteErrorMsg(MapData(mapa, .Pos.x, .Pos.Y).Userindex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+                            Call FlushBuffer(MapData(mapa, .Pos.x, .Pos.Y).Userindex)
 
                         End If
 
                     End If
                 
-                    Call CloseSocket(MapData(mapa, .Pos.X, .Pos.Y).Userindex)
+                    Call CloseSocket(MapData(mapa, .Pos.x, .Pos.Y).Userindex)
 
                 End If
 
@@ -1725,7 +1734,7 @@ Sub ConnectUser(ByVal Userindex As Integer, _
         .showName = True 'Por default los nombres son visibles
     
         'If in the water, and has a boat, equip it!
-        If .Invent.BarcoObjIndex > 0 And (HayAgua(mapa, .Pos.X, .Pos.Y) Or BodyIsBoat(.Char.body)) Then
+        If .Invent.BarcoObjIndex > 0 And (HayAgua(mapa, .Pos.x, .Pos.Y) Or BodyIsBoat(.Char.body)) Then
 
             .Char.Head = 0
 
@@ -1777,12 +1786,12 @@ Sub ConnectUser(ByVal Userindex As Integer, _
             Call DoAdminInvisible(Userindex)
             .flags.SendDenounces = True
         End If
-        Call MakeUserChar(True, .Pos.Map, Userindex, .Pos.Map, .Pos.X, .Pos.Y)
+        Call MakeUserChar(True, .Pos.Map, Userindex, .Pos.Map, .Pos.x, .Pos.Y)
     
         Call WriteUserCharIndexInServer(Userindex)
         ''[/el oso]
     
-        Call DoTileEvents(Userindex, .Pos.Map, .Pos.X, .Pos.Y)
+        Call DoTileEvents(Userindex, .Pos.Map, .Pos.x, .Pos.Y)
     
         Call CheckUserLevel(Userindex)
         Call WriteUpdateUserStats(Userindex)
@@ -2072,7 +2081,7 @@ Sub ResetBasicUserInfo(ByVal Userindex As Integer)
         .Desc = vbNullString
         .DescRM = vbNullString
         .Pos.Map = 0
-        .Pos.X = 0
+        .Pos.x = 0
         .Pos.Y = 0
         .ip = vbNullString
         .Clase = 0
@@ -2329,6 +2338,7 @@ Sub ResetUserSlot(ByVal Userindex As Integer)
     Call ResetUserSpells(Userindex)
     Call ResetUserPets(Userindex)
     Call ResetUserBanco(Userindex)
+    Call ResetUserExtras(Userindex)
     Call ResetQuestStats(Userindex)
 
     With UserList(Userindex).ComUsu
@@ -2409,6 +2419,9 @@ Sub CloseUser(ByVal Userindex As Integer)
     
         'si esta en party le devolvemos la experiencia
         If .PartyIndex > 0 Then Call mdParty.SalirDeParty(Userindex)
+        
+          'Actualizamos los index de los amigos
+        Call ObtenerIndexAmigos(Userindex, True)
     
         'Save statistics
         Call Statistics.UserDisconnected(Userindex)
@@ -2561,3 +2574,16 @@ Function RandomString(cb As Integer) As String
     Next
 
 End Function
+
+Public Sub ResetUserExtras(ByVal Userindex As Integer)
+'***************************************************
+'Author: Bateman
+'***************************************************
+  Dim i As Integer
+  For i = 1 To MAXAMIGOS
+  UserList(Userindex).Amigos(i).Nombre = vbNullString
+  UserList(Userindex).Amigos(i).Ignorado = 0
+UserList(Userindex).Amigos(i).index = 0
+  Next i
+UserList(Userindex).Quien = vbNullString
+End Sub
