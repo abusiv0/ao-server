@@ -238,7 +238,7 @@ Public Const LimiteNewbie As Byte = 12
 
 Public Type tCabecera 'Cabecera de los con
 
-    Desc As String * 255
+    desc As String * 255
     crc As Long
     MagicWord As Long
 
@@ -1165,14 +1165,14 @@ Public Type tQuestNpc
 
     NpcIndex As Integer
     Amount As Integer
-
+    
 End Type
  
 Public Type tUserQuest
 
     NPCsKilled() As Integer
     QuestIndex As Integer
-
+    
 End Type
  
 Public Type tQuestStats
@@ -1180,8 +1180,9 @@ Public Type tQuestStats
     Quests(1 To MAXUSERQUESTS) As tUserQuest
     NumQuestsDone As Integer
     QuestsDone() As Integer
-
+    
 End Type
+
 
 '[Pablo ToxicWaste]
 Public Type ModClase
@@ -1286,7 +1287,7 @@ End Type
 Public Type tQuest
 
     Nombre As String
-    Desc As String
+    desc As String
     RequiredLevel As Byte
     
     RequiredOBJs As Byte
@@ -1300,7 +1301,6 @@ Public Type tQuest
     
     RewardOBJs As Byte
     RewardOBJ() As obj
-
 End Type
 
 '*********************************************************
@@ -1624,7 +1624,7 @@ Public Type User
     CharMimetizado As Char
     OrigChar As Char
     
-    Desc As String ' Descripcion
+    desc As String ' Descripcion
     DescRM As String
     
     Clase As eClass
@@ -1684,12 +1684,12 @@ Public Type User
     incomingData As clsByteQueue
     
     CurrentInventorySlots As Byte
+    
+    QuestStats As tQuestStats
 
     CentinelaUsuario As CentinelaUser
     
     cvcUser As cvc_User
-    
-    QuestStats As tQuestStats
 
 End Type
 
@@ -1802,7 +1802,7 @@ Public Type npc
 
     Name As String
     Char As Char 'Define como se vera
-    Desc As String
+    desc As String
 
     NPCtype As eNPCType
     Numero As Integer
@@ -1828,11 +1828,11 @@ Public Type npc
 
     Owner As Integer
 
+    QuestNumber As Integer
+    
     GiveEXP As Long
     GiveGLD As Long
     Drop(1 To MAX_NPC_DROPS) As tDrops
-    
-    QuestNumber As Integer
     
     Stats As NPCStats
     flags As NPCFlags
